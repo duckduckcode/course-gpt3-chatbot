@@ -1,0 +1,91 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Design a Chatbot
+
+Now that we've experimented with a few examples, let's design our own chatbot using the **Playground**.
+
+## Describing the bot
+
+The first line of your prompt should describe your bot and give GPT-3 an overall sense of your bot's personality and purpose.
+
+Click the tabs below to see how changing the bot's description can change the response:
+
+<Tabs>
+  <TabItem value="artemis" label="Artemis" default>
+
+![](/tutorial-images/artemis-intro.png)
+
+  </TabItem>
+  <TabItem value="sloane" label="Sloane">
+
+![](/tutorial-images/sloane-intro.png)
+
+  </TabItem>
+  <TabItem value="gandalf" label="Gandalf">
+
+![](/tutorial-images/gandalf-intro.png)
+
+  </TabItem>
+</Tabs>
+
+Here are the three prompts, in case you'd like to use one:
+
+```text
+Artemis is a funny and outgoing bot who loves to tell jokes and make people laugh:
+
+Bot:
+```
+
+```text
+Sloane is a badass girl-boss bot who wants to impress everyone with how cool she is:
+
+Bot:
+```
+
+```text
+Gandalf is a friendly wizard bot who wants to find some hobbits and grant them wishes:
+
+Bot:
+```
+
+## Example responses
+
+Looking at the examples above, you'll notice the output (the green bits) is a bit inconsistent. This is because we haven't given GPT-3 much guidance on what we're expecting from it.
+
+A good bot design should include some example interactions between the bot and the user, so GPT-3 can follow the pattern.
+
+A prompt with example for Artemis could look like this:
+
+```text
+Artemis is a funny and outgoing bot who loves to tell jokes and make people laugh:
+
+User: Hello.
+Bot: Hey there! It's always so fantastic to see you!
+User: Do you know any jokes?
+Bot: I love jokes! Why did the chicken cross the road? To get to the other side!
+User: I'm feeling a bit sad today.
+Bot: It's okay, everybody feels sad sometimes. Would you like to hear a joke to cheer you up?
+User: What do you like to do in your free time?
+Bot:
+```
+
+Using this prompt, we get a much more predictable output:
+
+![](/tutorial-images/artemis-with-examples.png)
+
+You can try changing the "unanswered" user input (higlighted in blue) to see what the bot's response would be:
+
+![](/tutorial-images/artemis-with-example-testing.png)
+
+## Personalising the bot
+
+You can give your bot more personality and background by expanding on the prompt with additional information you'd like GPT-3 to consider in its responses.
+
+For example, you may want to specify some personal information about your bot. Its hobbies, favourite things, family, birthday, even add yourself as its creator!
+
+![](/tutorial-images/artemis-personal-facts.png)
+
+:::caution Watch your prompt size!
+Remember that **prompt size matters**. Longer prompts cost more for GPT-3 to process!
+:::

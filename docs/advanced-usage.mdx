@@ -1,0 +1,85 @@
+# Advanced Usage
+
+Hopefully you've had a chance to try some of the examples now, you can load a prewritten **prompt** and run the example to generate a **completion**.
+
+You will have noticed there are many settings in the sidebar of the Playground. These settings can be changed to get different results from GPT-3, depending on your use case.
+
+When you use GPT-3 from your code, you'll pass in the **prompt** and also all the **settings** you want to use for that particular completion.
+
+## Mode
+
+### Complete
+
+A "completion" is when you send the API some piece of text as input, and the AI model "completes" it for you by adding something to the end.
+
+For example, if you send a chat conversation then the completion might be the next line of the conversation.
+
+[example]
+
+If you send a list then the completion might be a series of list items.
+
+[example]
+
+### Insert
+
+### Edit
+
+## Model
+
+There are two main groups of models available in the Playground, **GPT-3** and **Codex**. You can hover over the options in this dropdown to find more information about each model.
+
+![Different models can be selected via the dropdown](/tutorial-images/playground-model-selector.png)
+
+### GPT-3 Models
+
+**GPT-3** models are used for generating **natural human-like language**.
+
+These models have different "sizes". Generally, a large model will give the best natural-language results that sound like a human, while smaller models are more suitable for "less creative" tasks like identifying sentiment or topics from a piece of text.
+
+Smaller models are faster and cheaper, but the results will not be good enough for all use cases.
+
+Different models can have different "sizes" which means they are trained on more or fewer data points.
+
+A "larger" model will generally give "better" results. For generating natural language like GPT3 is doing, "better" will mean the result will seem more natural and human-like with fewer strange-seeming results.
+
+"Larger" models are also slower to generate a result. Using a smaller model will give faster responses, and is also cheaper according to OpenAI's pricing plans.
+
+A large model like Da Vinci will work well when you're expecting the model to generate the whole response with no extra guidance.
+
+A smaller model can still give very good results if you give it some guidance by "training" the model, which means giving it some examples of inputs & outputs you would expect.
+
+### Codex Models
+
+**Codex** models are used for generating **code**.
+
+## Temperature
+
+This is a number between 0 and 1, and roughly indicates the "predictability" of the result.
+
+A **low temperature** will result in more **deterministic** results, which means the result will likely be the same each time you send it the same prompt. This can be desirable for use cases like identifying key words in a piece of text, but my be undesirable for generating creative ideas such as written articles or chatbot replies.
+
+A **high temperature** introduces some randomization, and so results are less deterministic. This is sometimes talked about as "creativity" in the context of writing a chatbot with this kind of tech, as you don't want your bot to be boring and repetitive.
+
+Careful though, going _too_ high can result in the responses just getting a bit too weird...
+
+## Maximum length
+
+Allows you to set some limits on how many **tokens** to use for each request. Fewer tokens means that shorter completions must be generated.
+
+Making this number too small can result in some completions being "cut off" without finishing a complete sentence.
+
+## Stop sequences
+
+## Top P
+
+## Frequency penalty
+
+## Presence penalty
+
+## Best of
+
+## Inject start text
+
+## Inject restart text
+
+## Show probabilities

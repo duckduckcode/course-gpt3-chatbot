@@ -1,0 +1,555 @@
+# Python Chatbot
+
+The interaction in the command line will look like this when it starts:
+
+```sh
+Bot: Hello!
+You:
+```
+
+After you've chatted a bit it might look like this:
+
+```sh
+Bot: Hello!
+You: Hi!
+Bot: Nice to meet you.
+You: Likewise.
+Bot: How was your day?
+You:
+```
+
+We will achieve this by **dynamically** creating a prompt for GPT-3. The prompt will look something like this:
+
+```text
+August is a kind bot who wants to be friends.
+
+Bot: Hello!
+You: [USER_INPUT]
+Bot:
+```
+
+## Greet the user
+
+Time for "Hello world!", let's test we have everything up and running by greeting the user.
+
+Print a greeting from your bot:
+
+```python
+# greet the user
+print("Bot: Hello!")
+```
+
+:::info Run your app
+
+Your app should say "Bot: Hello!" and then exit.
+
+```sh
+Bot: Hello!
+```
+
+:::
+
+## Capture user input
+
+We need to ask the user to reply to the bot, and then capture what they type in.
+
+Use a **while-loop** to make sure we keep asking the user for input. This will let our user talk to the bot for as long as they want.
+
+```python
+# greet the user
+print("Bot: Hello!")
+
+# highlight-start
+while True:
+  # capture user input
+  user_input = input("You: ")
+# highlight-end
+```
+
+:::info Run your app
+
+Your app should say hi, then wait for you to reply. It should ask you to reply over and over, and never quit.
+
+The bot doesn't reply yet!
+
+```sh
+Bot: Hello!
+You: Hi
+You: Hello?
+You: Anyone...?
+You:
+```
+
+:::
+
+## Configure OpenAI
+
+### Install OpenAI library
+
+Install the **openai** Python library, so you can use it in your app.
+
+```sh
+pip install openai
+```
+
+:::caution Important
+
+If you are using **python3** to run your app, you will need to use **pip3** (instead of **pip**) to install the openai library.
+
+```sh
+pip3 install openai
+```
+
+:::
+
+### Add OpenAI to your app
+
+Import the **openai** library, and then configure it with your API Key from the OpenAI settings.
+
+```python
+# highlight-start
+import openai
+
+# use your OpenAI account
+openai.api_key = "YOUR_API_KEY"
+# highlight-end
+
+# greet the user
+print("Bot: Hello!")
+
+while True:
+  # capture user input
+  user_input = input("You: ")
+```
+
+:::info Run your app
+There should not be any errors!
+
+Your app should **still** just be a bot that never replies to you...
+
+```sh
+Bot: Hello!
+You: Hey!
+You: How are you?
+You: Are you there??
+You:
+```
+
+:::
+
+## Build a prompt
+
+We want our prompt to be a **string** that is formatted like the prompts we used in the OpenAI Playground.
+
+For this prompt we want a pattern like this, where we are prompting GPT-3 to fill in the blank space after "Bot:":
+
+```text
+August is a kind bot who wants to be friends.
+
+Bot: Hello!
+You: [USER_INPUT]
+Bot:
+```
+
+```python
+import openai
+
+# use your OpenAI account
+openai.api_key = "YOUR_API_KEY"
+
+# greet the user
+print("Bot: Hello!")
+
+while True:
+  # capture user input
+  user_input = input("You: ")
+
+# highlight-start
+  # create a prompt for GPT-3
+  prompt = "August is a kind bot who wants to be friends.\n"
+
+  # leave a blank line before the chat history
+  prompt += "\n"
+
+  # add example chat history
+  prompt += "Bot: Hello!\n"
+  prompt += "You: " + user_input + "\n"
+
+  # add empty line for GPT-3 to complete
+  prompt += "Bot:"
+
+  # optional line to preview your prompt in the command line
+  print("\n===\n" + prompt + "\n===\n")
+# highlight-end
+
+```
+
+:::info Run your app
+Each time you send a message to the bot, it should print out the prompt you **will** be sending to GPT-3 in the next step.
+
+The prompt start and end is indicated by the `===` lines.
+
+```sh
+Bot: Hello!
+You: hey
+
+===
+August is a kind bot who wants to be friends.
+
+Bot: Hello!
+You: hey
+Bot:
+===
+
+You:
+```
+
+:::
+
+## Generate bot response
+
+We need to send our **prompt** to GPT-3, so that it can generate a **completion** for us to use as the bot's response.
+
+This is a multi-step process, where we need to:
+
+- **send** the prompt request to GPT-3 to get back a **completion**
+- **extract** the bot response from GPT-3's **completion**
+- **display** the bot response to the user
+
+We won't see any change in how our bot works until we have added all three steps to our code.
+
+### Send prompt to GPT-3
+
+```python
+import openai
+
+# use your OpenAI account
+openai.api_key = "YOUR_API_KEY"
+
+# greet the user
+print("Bot: Hello!")
+
+while True:
+  # capture user input
+  user_input = input("You: ")
+
+   # create a prompt for GPT-3
+  prompt = "August is a kind bot who wants to be friends.\n"
+
+  # leave a blank line before the chat history
+  prompt += "\n"
+
+  # add example chat history
+  prompt += "Bot: Hello!\n"
+  prompt += "You: " + user_input + "\n"
+
+  # add empty line for GPT-3 to complete
+  prompt += "Bot:"
+
+  # optional line to preview your prompt in the command line
+  print("\n===\n" + prompt + "\n===\n")
+
+# highlight-start
+  # send the GPT3 request
+  completion = openai.Completion.create(
+    model="text-davinci-002",
+    prompt=prompt,
+    temperature=0,
+    max_tokens=150,
+    stop="You:"
+  )
+# highlight-end
+```
+
+We want to capture the response we get from GPT-3, so we use a new variable called **completion**.
+
+The **openai** library we added to our code has a function we can use called **openai.Completion.create()**. This function takes all the same parameters as the ones available in the Playground.
+
+Adding this part to our app will **send** the request, but it won't **display** any results without us adding more code.
+
+### Extract the bot response
+
+When you generate a **completion**, that result actually has way more data than just "what the bot says back".
+
+Here's an example of what the whole **completion** looks like:
+
+```json
+{
+  "id": "cmpl-6FvbvTFJEbzyIlAJ9VP7IysUzPk8o",
+  "object": "text_completion",
+  "created": 1669254395,
+  "model": "text-davinci-002",
+  "choices": [
+    {
+      "text": " How are you today?",
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 75,
+    "completion_tokens": 5,
+    "total_tokens": 80
+  }
+}
+```
+
+Can you spot the line that actually has the bot's reply in it?
+
+The **completion** has a property called **choices**, which is a list. The **first item** in that list has a property called **text**, which is the bot's response. Also, notice that the **text** has some empty space at the start which we will want to strip off.
+
+We can extract the **text** from the **completion** and **strip** the white space to get the bot response:
+
+```python
+  # send the GPT3 request
+  completion = openai.Completion.create(
+    model="text-davinci-002",
+    prompt=prompt,
+    temperature=0,
+    max_tokens=150,
+    stop="You:"
+  )
+
+# highlight-start
+  # extract the response
+  bot_response = completion.choices[0].text.strip()
+# highlight-end
+```
+
+:::tip Printing the completion
+
+If you try to just do `print(completion)` it won't work because Python can't turn a Class into a String.
+
+As an alternative, you can turn the Completion into JSON and print that instead:
+
+```python
+import json
+
+print(json.dumps(completion, indent=2))
+```
+
+:::
+
+### Display the response
+
+```python
+  # send the GPT3 request
+  completion = openai.Completion.create(
+    model="text-davinci-002",
+    prompt=prompt,
+    temperature=0,
+    max_tokens=150,
+    stop="You:"
+  )
+
+  # extract the response
+  bot_response = completion.choices[0].text.strip()
+
+# highlight-start
+  # display the response
+  print("Bot: " + bot_response)
+# highlight-end
+```
+
+:::info Run your app
+
+You bot should now be fully functional, why don't you get to know each other a bit?
+
+```sh
+Bot: Hello!
+You: hey! what's your favourite colour?
+Bot: My favourite colour is blue, like the ocean.
+You: do you have any hobbies?
+Bot: I like to browse the Internet.
+You: what's your birthday?
+Bot: My birthday is on 24 November 2022.
+You:
+```
+
+:::
+
+## Advanced functionality
+
+### Personal Facts
+
+It can be cool for your bot to have a little bit of personality and know some information about themselves.
+
+We can add more info to the prompt, so that GPT-3 will consider this additional info when generating a response.
+
+#### Write some facts about the bot
+
+We write our facts as a list so that we can loop over them to add them all to the prompt.
+
+```python
+import openai
+
+# use your OpenAI account
+openai.api_key = "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"
+
+# highlight-start
+# write some basic facts about your bot.
+# these will be added to every prompt.
+facts = [
+    "The bot was created by Tanya Gray.",
+    "The bot was created on 24 November 2022.",
+    "The bot's favourite colour is blue, like the ocean.",
+    "The bot likes to browse the Internet.",
+    "The bot is an only child.",
+]
+# highlight-end
+
+# greet the user
+print("Bot: Hello!")
+```
+
+#### Add facts to the prompt
+
+At the moment, our prompt is quite simple and looks like this:
+
+```text
+August is a kind bot who wants to be friends.
+
+Bot: Hello!
+You: [USER_INPUT]
+Bot:
+```
+
+After this change, we are aiming to have our prompt include the facts, like this:
+
+```text
+August is a kind bot who wants to be friends.
+
+The bot was created by Tanya Gray.
+The bot was created on 24 November 2022.
+The bot's favourite colour is blue, like the ocean.
+The bot likes to browse the Internet.
+The bot is an only child.
+
+Bot: Hello!
+You: [USER_INPUT]
+Bot:
+```
+
+To achieve this, we need to change the way we generate our **prompt**. The facts should be added **after** the first line of the prompt, and **before** the example messages.
+
+We can add a **for-loop** to our code, that adds each fact to the prompt on a new line:
+
+```python
+
+  # build a prompt for GPT-3
+  prompt = "August is a kind bot who wants to be friends."
+  prompt += "\n"
+
+  # highlight-start
+  # leave a blank line before the facts list
+  prompt += "\n"
+
+
+  # add the facts to the prompt
+  for fact in facts:
+      prompt += fact
+      prompt += "\n"
+  # highlight-end
+
+  # leave a blank line before the chat history
+  prompt += "\n"
+
+  # add example chat history
+  prompt += "Bot: Hello!\n"
+  prompt += "You: " + user_input + "\n"
+
+  # add empty line for GPT-3 to complete
+  prompt += "Bot:"
+
+
+```
+
+Now when we ask our bot about these specific topics, it will answer based on the facts that we have provided.
+
+:::info Run your app
+
+Ask your bot about something it should know, thanks to these new facts:
+
+```sh
+Bot: Hello!
+You: hey! what's your favourite colour?
+Bot: My favourite colour is blue, like the ocean.
+You: do you have any hobbies?
+Bot: I like to browse the Internet.
+You: what's your birthday?
+Bot: My birthday is on 24 November 2022.
+You:
+```
+
+:::
+
+### Remembering topics
+
+```python
+import openai
+
+# use your OpenAI account
+openai.api_key = "YOUR_API_KEY"
+
+# highlight-start
+# store the message history for bot and user
+# so we can add the messages to the prompt each time
+message_history = []
+# highlight-end
+
+# greet the user
+print("Bot: Hello!")
+
+# highlight-start
+# add bot greeting to the message history
+message_history.append("Bot: Hello!")
+# highlight-end
+
+while True:
+  # capture user input
+  user_input = input("You: ")
+
+# highlight-start
+  # add user input to the message history
+  message_history.append("You: " + user_input)
+# highlight-end
+
+# highlight-start
+  # build a prompt for GPT-3
+  prompt = "August is a kind bot who wants to be friends."
+  prompt += "\n"
+
+  # leave a blank line before the chat history
+  prompt += "\n"
+
+  # add the chat history to the prompt
+  # using only the last 6 messages in the history
+  for message in message_history[-6:]:
+    prompt += message
+    prompt += "\n"
+
+  # add the empty line for the bot to respond
+  prompt += "Bot:"
+# highlight-end
+
+  # send the GPT3 request
+  completion = openai.Completion.create(
+    model="text-davinci-002",
+    prompt=prompt,
+    temperature=0,
+    max_tokens=150,
+    stop="You:"
+  )
+
+  # extract the response
+  bot_response = completion.choices[0].text.strip()
+
+  # display the response
+  print("Bot: " + bot_response)
+
+# highlight-start
+  # add bot response to the message history
+  message_history.append("Bot: " + bot_response)
+# highlight-end
+```
